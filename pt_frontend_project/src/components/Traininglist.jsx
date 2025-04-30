@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-function Traininglist() {
+export default function Traininglist() {
 
     ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -14,7 +14,8 @@ function Traininglist() {
     const [columnDefs] = useState([
         { field: "activity", sortable: true, filter: true },
         { field: "date", sortable: true, filter: true, valueFormatter: params => dayjs(params.value).format('DD.MM.YYYY HH:mm') },
-        { field: "duration", sortable: true, filter: true }
+        { field: "duration", sortable: true, filter: true },
+        { field: "customerName", headerName: "Customer", sortable: true, filter: true}
     ])
 
     useEffect(() => {
@@ -25,8 +26,33 @@ function Traininglist() {
                 }
                 return response.json();
             })
-            .then(responseData => {
-                setListItems(responseData._embedded.trainings)
+            .then( async trainingData => {
+                const trainings = trainingData._embedded.trainings;
+
+                const CustomerTraining = await Promise.all(
+                    trainings.map(async training => {
+                        const customerUrl = training._links.customer.href;
+
+                        try {
+                            const customerRest = await fetch(customerUrl);
+                            const customerData = await customerRest.json();
+                            const customerName = `${customerData.firstname} ${customerData.lastname}`
+
+                            return {
+                                ... training, customerName: customerName
+                            };
+                        }
+                        catch (err) {
+                            console.error("Error fetching the customer", err);
+
+                            return {
+                                ...training, customerName: "unknonwn"
+                            };
+                        }
+                    })
+                );
+
+                setListItems(CustomerTraining)
             })
             .catch(err => console.error(err))
     }, []);
@@ -36,7 +62,7 @@ function Traininglist() {
     return (
         <div>
             <h2>Training Schedule</h2>
-            <div className="ag-theme-alpine" style={{ height: 600, width: 650 }}>
+            <div className="ag-theme-alpine" style={{ height: 600, width: 850 }}>
                 <AgGridReact
                     rowData={listItems}
                     columnDefs={columnDefs}
@@ -45,5 +71,3 @@ function Traininglist() {
         </div>
     )
 }
-
-export default Traininglist

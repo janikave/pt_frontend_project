@@ -4,7 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-function Customerlist() {
+export default function Customerlist() {
 
     ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -12,7 +12,7 @@ function Customerlist() {
 
     const [columnDefs] = useState([
         { field: "firstname", headerName: "First Name", sortable: true, filter: true },
-        { field: "nastname", headerName: "Last Name", sortable: true, filter: true },
+        { field: "lastname", headerName: "Last Name", sortable: true, filter: true },
         { field: "streetaddress", headerName: "Street Address", sortable: true, filter: true },
         { field: "postcode", headerName: "Post Code", sortable: true, filter: true },
         { field: "city", sortable: true, filter: true },
@@ -49,5 +49,3 @@ function Customerlist() {
         </div>
     )
 }
-
-export default Customerlist
