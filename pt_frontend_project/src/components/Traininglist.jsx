@@ -1,30 +1,24 @@
 import { useState, useEffect } from "react";
 import { AgGridReact } from 'ag-grid-react';
+import dayjs from 'dayjs'
 
 import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-function Customerlist() {
+function Traininglist() {
 
     ModuleRegistry.registerModules([AllCommunityModule]);
 
     const [listItems, setListItems] = useState([]);
 
     const [columnDefs] = useState([
-        { field: "firstname", headerName: "First Name", sortable: true, filter: true },
-        { field: "nastname", headerName: "Last Name", sortable: true, filter: true },
-        { field: "streetaddress", headerName: "Street Address", sortable: true, filter: true },
-        { field: "postcode", headerName: "Post Code", sortable: true, filter: true },
-        { field: "city", sortable: true, filter: true },
-        { field: "email",  sortable: true, filter: true },
-        { field: "phone", sortable: true, filter: true },
+        { field: "activity", sortable: true, filter: true },
+        { field: "date", sortable: true, filter: true, valueFormatter: params => dayjs(params.value).format('DD.MM.YYYY HH:mm') },
+        { field: "duration", sortable: true, filter: true }
     ])
 
-
-
-
     useEffect(() => {
-        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers')
+        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Error in fetch: " + response.statusText)
@@ -32,15 +26,17 @@ function Customerlist() {
                 return response.json();
             })
             .then(responseData => {
-                setListItems(responseData._embedded.customers)
+                setListItems(responseData._embedded.trainings)
             })
             .catch(err => console.error(err))
     }, []);
 
+    console.log(listItems)
+
     return (
         <div>
-            <h2>Customers</h2>
-            <div className="ag-theme-alpine" style={{ height: 600, width: "75vw"}}>
+            <h2>Training Schedule</h2>
+            <div className="ag-theme-alpine" style={{ height: 600, width: 650 }}>
                 <AgGridReact
                     rowData={listItems}
                     columnDefs={columnDefs}
@@ -50,4 +46,4 @@ function Customerlist() {
     )
 }
 
-export default Customerlist
+export default Traininglist

@@ -9,6 +9,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Traininglist from './components/Traininglist';
 
 
 function App() {
@@ -36,11 +37,7 @@ function App() {
 
         {tab === 0 && <Customerlist />}
 
-        {tab === 1 && (
-          <div>
-            <Typography variant='h4'>Here will be info about training</Typography>
-          </div>
-        )}
+        {tab === 1 && <Traininglist />}
     </Container>
   )
 }
