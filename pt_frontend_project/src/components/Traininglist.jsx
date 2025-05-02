@@ -5,6 +5,8 @@ import dayjs from 'dayjs'
 import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
+import AddTraining from "./Addtraining";
+
 export default function Traininglist() {
 
     ModuleRegistry.registerModules([AllCommunityModule]);
@@ -62,7 +64,10 @@ export default function Traininglist() {
     return (
         <div>
             <h2>Training Schedule</h2>
-            <div className="ag-theme-alpine" style={{ height: 600, width: 850 }}>
+
+            <AddTraining />
+
+            <div className="ag-theme-alpine" style={{ height: 600, width: "50vw" }}>
                 <AgGridReact
                     rowData={listItems}
                     columnDefs={columnDefs}
