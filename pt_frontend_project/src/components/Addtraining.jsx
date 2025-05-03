@@ -15,8 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
-
-export default function AddTraining() {
+export default function AddTraining( {getTrainings, deleteTraining, selectedTraining} ) {
 
     const [training, setTraining] = useState({ activity: "", date: null, duration: "", customer: "" })
 
@@ -48,7 +47,8 @@ export default function AddTraining() {
                     throw new Error("Failed to add new a training for a customer")
                 }
                 alert("Training added to list.")
-                setTraining({ activity: "", date: null, duration: "", customer: "" })
+                setTraining({ activity: "", date: null, duration: "", customer: "" });
+                getTrainings();
             })
             .catch(err => console.error(err))
     };
@@ -80,7 +80,8 @@ export default function AddTraining() {
                         ))}
                     </Select>
                 </FormControl>
-                <Button variant="contained" onClick={handleSubmit}>Add</Button>
+                <Button variant="contained" onClick={handleSubmit}>Add</Button> 
+                <Button variant="contained" color="error" disabled={!selectedTraining} onClick={() => deleteTraining(selectedTraining._links.self.href)}>Delete</Button> 
             </Stack>
             </LocalizationProvider>
         </div>

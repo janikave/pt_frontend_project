@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 
-export default function AddCustomer() {
+export default function AddCustomer( {getCustomers, deleteCustomer, selectedCustomer} ) {
 
     const [customer, setCustomer] = useState({ firstname: "", lastname: "", streetaddress: "", postcode: "", city: "", email: "", phone: "" })
 
@@ -25,6 +25,7 @@ export default function AddCustomer() {
                 }
                 alert("Customer added.")
                 setCustomer({ firstname: "", lastname: "", streetaddress: "", postcode: "", city: "", email: "", phone: "" });
+                getCustomers();
             })
             .catch(err => console.error(err))
     };
@@ -33,7 +34,7 @@ export default function AddCustomer() {
 
     return (
         <div>
-            <Stack mt={1} direction="row" spacing={1} justifyContent="center" alignItems="center">
+            <Stack mt={3} direction="row" spacing={1} justifyContent="center" alignItems="center">
                 <br />
                 <h3>New Customer:</h3>
                 <TextField name="firstname" label="First Name" placeholder="First Name" value={customer.firstname} onChange={handleChange} />
@@ -44,6 +45,7 @@ export default function AddCustomer() {
                 <TextField name="email" label="Email" placeholder="Email" value={customer.email} onChange={handleChange} />
                 <TextField name="phone" label="Phone" placeholder="Phone" value={customer.phone} onChange={handleChange} />
                 <Button variant="contained" onClick={handleSubmit}>Add</Button>
+                <Button variant="contained" color="error" onClick={() => deleteCustomer(selectedCustomer._links.self.href)}>Delete</Button>
             </Stack>
         </div>
     )

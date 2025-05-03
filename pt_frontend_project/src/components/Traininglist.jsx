@@ -6,6 +6,8 @@ import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import AddTraining from "./Addtraining";
+import { Button } from "@mui/material";
+
 
 export default function Traininglist() {
 
@@ -19,6 +21,8 @@ export default function Traininglist() {
         { field: "duration", sortable: true, filter: true },
         { field: "customerName", headerName: "Customer", sortable: true, filter: true}
     ])
+
+    const [selectedTraining, setSelectedTraining] = useState(null);
 
     useEffect(() => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
@@ -59,18 +63,57 @@ export default function Traininglist() {
             .catch(err => console.error(err))
     }, []);
 
+    const getTrainings = () => {
+        fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
+            .then(response => response.json())
+            .then(async trainingData => {
+                const trainings = trainingData._embedded.trainings;
+
+                const updateTrainings = await Promise.all(
+                    trainings.map(async training => {
+                        try {
+                            const res = await fetch(training._links.customer.href);
+                            const cust = await res.json();
+                            return {...training, customerName: `${cust.firstname} ${cust.lastname}` };
+                        } catch (err) {
+                            return {... training, customerName: "unknown"}
+                        }
+                    })
+                );
+                setListItems(updateTrainings)
+            })
+            .catch(err => console.error(err));
+    }
+
+        useEffect(() => {
+            getTrainings();
+        }, []);
+
+        const deleteTraining = (url) => {
+            fetch(url, {method: 'DELETE'})
+                .then(() => getTrainings())
+                .catch(err => console.error(err));
+        };
+
     console.log(listItems)
 
     return (
         <div>
             <h2>Training Schedule</h2>
 
-            <AddTraining />
+            <AddTraining getTrainings={getTrainings} deleteTraining={deleteTraining} selectedTraining={selectedTraining} />
 
             <div className="ag-theme-alpine" style={{ height: 600, width: "50vw" }}>
                 <AgGridReact
                     rowData={listItems}
                     columnDefs={columnDefs}
+                    rowSelection="single"
+                    onSelectionChanged={params => {
+                        const selectedNode = params.api.getSelectedNodes()[0];
+                        if (selectedNode) {
+                            setSelectedTraining(selectedNode.data);
+                        }
+                    }}
                 />
             </div>
         </div>
