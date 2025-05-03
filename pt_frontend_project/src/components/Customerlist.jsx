@@ -13,13 +13,13 @@ export default function Customerlist() {
     const [listItems, setListItems] = useState([]);
 
     const [columnDefs] = useState([
-        { field: "firstname", headerName: "First Name", sortable: true, filter: true },
-        { field: "lastname", headerName: "Last Name", sortable: true, filter: true },
-        { field: "streetaddress", headerName: "Street Address", sortable: true, filter: true },
-        { field: "postcode", headerName: "Post Code", sortable: true, filter: true },
-        { field: "city", sortable: true, filter: true },
-        { field: "email", sortable: true, filter: true },
-        { field: "phone", sortable: true, filter: true },
+        { field: "firstname", headerName: "First Name", sortable: true, filter: true, editable: true },
+        { field: "lastname", headerName: "Last Name", sortable: true, filter: true, editable: true },
+        { field: "streetaddress", headerName: "Street Address", sortable: true, filter: true, editable: true },
+        { field: "postcode", headerName: "Post Code", sortable: true, filter: true, editable: true },
+        { field: "city", sortable: true, filter: true, editable: true },
+        { field: "email", sortable: true, filter: true, editable: true },
+        { field: "phone", sortable: true, filter: true, editable: true }
     ])
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -58,9 +58,33 @@ export default function Customerlist() {
 
     const deleteCustomer = (url) => {
         fetch(url, {method: 'DELETE'})
-            .then(() => getCustomers())
+            .then (response => {
+                if (!response.ok) {
+                    throw new Error("Deletion failed");
+                }
+                alert("Customer deleted.");
+                getCustomers();
+            })
             .catch(err => console.error(err));
     };
+
+    const handleCellEdit = async (params) => {
+        const updatedCustomer = params.data;
+
+        try {
+            await fetch(updatedCustomer._links.self.href, {
+                method: 'PUT',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify(updatedCustomer),
+            });
+
+            alert("Information updated.");
+            getCustomers();
+        } catch (err) {
+            console.error("Error updating customer info:", err);
+            alert('Update failed');
+        }
+};
 
 
     return (
@@ -74,6 +98,7 @@ export default function Customerlist() {
                     rowData={listItems}
                     columnDefs={columnDefs}
                     rowSelection="single"
+                    onCellValueChanged={handleCellEdit}
                     onSelectionChanged={params => {
                         const selectedNode = params.api.getSelectedNodes()[0];
                         if (selectedNode) {

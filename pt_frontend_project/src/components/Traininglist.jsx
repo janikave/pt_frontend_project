@@ -91,7 +91,13 @@ export default function Traininglist() {
 
         const deleteTraining = (url) => {
             fetch(url, {method: 'DELETE'})
-                .then(() => getTrainings())
+                .then (response => {
+                    if (!response.ok) {
+                        throw new Error("Deletion failed");
+                    }
+                    alert("Training deleted.");
+                    getTrainings();
+                })
                 .catch(err => console.error(err));
         };
 
