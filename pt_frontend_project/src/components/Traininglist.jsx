@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AgGridReact } from 'ag-grid-react';
 import dayjs from 'dayjs'
 
-import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import AddTraining from "./Addtraining";
@@ -22,7 +22,7 @@ export default function Traininglist() {
         { field: "customerName", headerName: "Customer", sortable: true, filter: true}
     ])
 
-    const [selectedTraining, setSelectedTraining] = useState(null);
+    const trainingGridRef = useRef();
 
     useEffect(() => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
@@ -101,16 +101,18 @@ export default function Traininglist() {
                 .catch(err => console.error(err));
         };
 
-    console.log(listItems)
-
     return (
         <div>
             <h2>Training Schedule</h2>
 
-            <AddTraining getTrainings={getTrainings} deleteTraining={deleteTraining} selectedTraining={selectedTraining} />
+            <AddTraining 
+            getTrainings={getTrainings}
+            deleteTraining={deleteTraining}
+            selectedTraining={selectedTraining} />
 
             <div className="ag-theme-alpine" style={{ height: 600, width: "50vw" }}>
                 <AgGridReact
+                    ref={trainingGridRef}
                     rowData={listItems}
                     columnDefs={columnDefs}
                     rowSelection="single"

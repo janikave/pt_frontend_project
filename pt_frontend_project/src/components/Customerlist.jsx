@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from 'ag-grid-react';
 
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry, CsvExportModule } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+import { Button } from "@mui/material";
 
 import AddCustomer from "./Addcustomer";
 
@@ -24,7 +26,7 @@ export default function Customerlist() {
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-
+    const customerGridRef = useRef();
 
 
     useEffect(() => {
@@ -54,11 +56,11 @@ export default function Customerlist() {
             })
             .catch(err => console.error(err));
     };
-    
+
 
     const deleteCustomer = (url) => {
-        fetch(url, {method: 'DELETE'})
-            .then (response => {
+        fetch(url, { method: 'DELETE' })
+            .then(response => {
                 if (!response.ok) {
                     throw new Error("Deletion failed");
                 }
@@ -84,17 +86,27 @@ export default function Customerlist() {
             console.error("Error updating customer info:", err);
             alert('Update failed');
         }
-};
+    };
+
+    const exportCustomers = useCallback(() => {
+        if (customerGridRef.current) {
+            customerGridRef.current.api.exportDataAsCsv();
+        }
+    }, []);
 
 
     return (
         <div>
             <h2>Customers</h2>
 
-            <AddCustomer getCustomers={getCustomers} deleteCustomer={deleteCustomer} selectedCustomer={selectedCustomer} />
-
+            <AddCustomer
+                getCustomers={getCustomers}
+                deleteCustomer={deleteCustomer}
+                selectedCustomer={selectedCustomer}
+                exportCustomers={exportCustomers} />
             <div className="ag-theme-alpine" style={{ height: 600, width: "75vw" }}>
                 <AgGridReact
+                    ref={customerGridRef}
                     rowData={listItems}
                     columnDefs={columnDefs}
                     rowSelection="single"
@@ -107,6 +119,8 @@ export default function Customerlist() {
                     }}
                 />
             </div>
+            <br />
+            <Button variant="contained" color="success" onClick={exportCustomers}>Export</Button>
         </div>
     )
 }
