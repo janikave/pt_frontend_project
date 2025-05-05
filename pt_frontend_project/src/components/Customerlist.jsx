@@ -104,7 +104,7 @@ export default function Customerlist() {
                 deleteCustomer={deleteCustomer}
                 selectedCustomer={selectedCustomer}
                 exportCustomers={exportCustomers} />
-            <div className="ag-theme-alpine" style={{ height: 600, width: "75vw" }}>
+            <div className="ag-theme-alpine" style={{ height: 500, width: "75vw" }}>
                 <AgGridReact
                     ref={customerGridRef}
                     rowData={listItems}

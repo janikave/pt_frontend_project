@@ -12,6 +12,7 @@ import Tab from '@mui/material/Tab';
 
 import Traininglist from './components/Traininglist';
 import TrainingCalendar from './components/Calendar';
+import StatisticGraph from './components/Statistics';
 
 
 function App() {
@@ -24,8 +25,8 @@ function App() {
   return (
     <Container>
       <CssBaseline />
-        <AppBar>
-        <Toolbar>
+        <AppBar sx={{ backgroundColor: '#36454F'}}>
+        <Toolbar >
           <Typography>
             PT Customers
           </Typography>
@@ -36,6 +37,7 @@ function App() {
           <Tab label="Customers" />
           <Tab label="Training" /> 
           <Tab label="Calendar" />
+          <Tab label="Statistics" />
         </Tabs>
 
         {tab === 0 && <Customerlist />}
@@ -43,6 +45,8 @@ function App() {
         {tab === 1 && <Traininglist />}
 
         {tab === 2 && <TrainingCalendar />}
+
+        {tab === 3 && <StatisticGraph />}
     </Container>
   )
 }

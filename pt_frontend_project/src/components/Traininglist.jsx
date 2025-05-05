@@ -112,7 +112,7 @@ export default function Traininglist() {
             deleteTraining={deleteTraining}
             selectedTraining={selectedTraining} />
 
-            <div className="ag-theme-alpine" style={{ height: 600, width: "50vw" }}>
+            <div className="ag-theme-alpine" style={{ height: 500, width: "50vw" }}>
                 <AgGridReact
                     ref={trainingGridRef}
                     rowData={listItems}
