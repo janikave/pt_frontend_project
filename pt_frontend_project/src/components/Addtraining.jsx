@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import dayjs from "dayjs";
@@ -40,7 +40,7 @@ export default function AddTraining( {getTrainings, deleteTraining, selectedTrai
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings', {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify(training)
+            body: JSON.stringify(trainingToAdd)
         })
             .then(response => {
                 if (!response.ok) {
@@ -62,7 +62,7 @@ export default function AddTraining( {getTrainings, deleteTraining, selectedTrai
                 <br />
                 <h3>New Training:</h3>
                 <TextField name="activity" label="Activity" placeholder="Training activity" value={training.activity} onChange={handleChange} />
-                <DatePicker name="date" label="Date" placeholder="Date for training" value={training.date} onChange={(value) => setTraining({ ...training, date: value })
+                <DateTimePicker name="date" label="Date" placeholder="Date and time for training" value={training.date} onChange={(value) => setTraining({ ...training, date: value })
                 } />
                 <TextField name="duration" label="Duration" placeholder="Duration for training" value={training.duration} onChange={handleChange} />
                 <FormControl style={{ minWidth: 250 }}>

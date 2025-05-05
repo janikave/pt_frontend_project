@@ -24,6 +24,8 @@ export default function Traininglist() {
 
     const trainingGridRef = useRef();
 
+    const [selectedTraining, setSelectedTraining] = useState(null);
+
     useEffect(() => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
             .then(response => {
@@ -100,7 +102,7 @@ export default function Traininglist() {
                 })
                 .catch(err => console.error(err));
         };
-
+        
     return (
         <div>
             <h2>Training Schedule</h2>
