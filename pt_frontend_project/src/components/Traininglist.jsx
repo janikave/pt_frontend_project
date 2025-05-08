@@ -6,8 +6,6 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import AddTraining from "./Addtraining";
-import { Button } from "@mui/material";
-
 
 export default function Traininglist() {
 
@@ -19,8 +17,10 @@ export default function Traininglist() {
         { field: "activity", sortable: true, filter: true },
         { field: "date", sortable: true, filter: true, valueFormatter: params => dayjs(params.value).format('DD.MM.YYYY HH:mm') },
         { field: "duration", sortable: true, filter: true },
-        { field: "customerName", headerName: "Customer", sortable: true, filter: true}
+        { field: "customerName", headerName: "Customer", sortable: true, filter: true }
     ])
+
+    // Variables for selecting a row from the list
 
     const trainingGridRef = useRef();
 
@@ -30,11 +30,11 @@ export default function Traininglist() {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error("Error in fetch: " + response.statusText)
+                    throw new Error("Error in fetch: " + response.statusText) // Error message if no response
                 }
                 return response.json();
             })
-            .then( async trainingData => {
+            .then(async trainingData => {
                 const trainings = trainingData._embedded.trainings;
 
                 const CustomerTraining = await Promise.all(
@@ -47,7 +47,7 @@ export default function Traininglist() {
                             const customerName = `${customerData.firstname} ${customerData.lastname}`
 
                             return {
-                                ... training, customerName: customerName
+                                ...training, customerName: customerName
                             };
                         }
                         catch (err) {
@@ -65,52 +65,61 @@ export default function Traininglist() {
             .catch(err => console.error(err))
     }, []);
 
+    // Fetching data for the trainings
+
     const getTrainings = () => {
         fetch('https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings')
             .then(response => response.json())
             .then(async trainingData => {
                 const trainings = trainingData._embedded.trainings;
 
+                // Getting the updated list of training
+
                 const updateTrainings = await Promise.all(
                     trainings.map(async training => {
                         try {
                             const res = await fetch(training._links.customer.href);
                             const cust = await res.json();
-                            return {...training, customerName: `${cust.firstname} ${cust.lastname}` };
+                            return { ...training, customerName: `${cust.firstname} ${cust.lastname}` }; // Parsing the customer name for training list
                         } catch (err) {
-                            return {... training, customerName: "unknown"}
+                            console.error("Failure in fetching customer:", err)
+                            return { ...training, customerName: "unknown" }
                         }
                     })
                 );
                 setListItems(updateTrainings)
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error("Failed to fetch trainings:", err));
     }
 
-        useEffect(() => {
-            getTrainings();
-        }, []);
+    useEffect(() => {
+        getTrainings();
+    }, []);
 
-        const deleteTraining = (url) => {
-            fetch(url, {method: 'DELETE'})
-                .then (response => {
-                    if (!response.ok) {
-                        throw new Error("Deletion failed");
-                    }
-                    alert("Training deleted.");
-                    getTrainings();
-                })
-                .catch(err => console.error(err));
-        };
-        
+    const deleteTraining = (url) => {
+        fetch(url, { method: 'DELETE' }) // Choosing the fetch method to delete data
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Deletion failed"); // Error message if no response
+                }
+                alert("Training deleted.");
+                getTrainings(); // Updating the list after confirmation
+            })
+            .catch(err => console.error(err));
+    };
+
     return (
         <div>
             <h2>Training Schedule</h2>
 
-            <AddTraining 
-            getTrainings={getTrainings}
-            deleteTraining={deleteTraining}
-            selectedTraining={selectedTraining} />
+            {/* Calling Add-component with necessary functions for the list */}
+
+            <AddTraining
+                getTrainings={getTrainings}
+                deleteTraining={deleteTraining}
+                selectedTraining={selectedTraining} />
+
+            {/* Rendering the list of trainings */}
 
             <div className="ag-theme-alpine" style={{ height: 500, width: "50vw" }}>
                 <AgGridReact
@@ -121,7 +130,7 @@ export default function Traininglist() {
                     onSelectionChanged={params => {
                         const selectedNode = params.api.getSelectedNodes()[0];
                         if (selectedNode) {
-                            setSelectedTraining(selectedNode.data);
+                            setSelectedTraining(selectedNode.data); // Creating ability to select a row from the list
                         }
                     }}
                 />
